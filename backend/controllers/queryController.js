@@ -3,12 +3,10 @@ const Query = require('../models/Query');
 const { buildSqlAgent } = require('../services/sqlAgentService');
 const { enforceReadOnly } = require('../utils/sqlSafety');
 
-// @desc    Execute a natural language query with streamed (SSE) response
+// @desc    Execute a natural language query against a connected MySQL database
 // @route   POST /api/query
 exports.executeQuery = async (req, res, next) => {
   let dataSource;
-  const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
-
   try {
     const { connectionId, question } = req.body;
 
@@ -18,42 +16,22 @@ exports.executeQuery = async (req, res, next) => {
     }
 
     const credentials = connection.getDecryptedCredentials();
-    const { agentExecutor, dataSource: ds } = await buildSqlAgent(credentials);
-    dataSource = ds;
 
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.flushHeaders();
+    let agentExecutor;
+    ({ agentExecutor, dataSource } = await buildSqlAgent(credentials, 'gemini'));
 
-    let generatedSQL = null;
+    let result;
+    try {
+      result = await agentExecutor.invoke({ input: question });
+    } catch (err) {
+      const isQuotaError = err.message?.includes('quota') || err.message?.includes('429');
+      if (!isQuotaError) throw err;
 
-    const eventStream = await agentExecutor.streamEvents({ input: question }, { version: 'v2' });
-
-    for await (const event of eventStream) {
-      if (event.event === 'on_tool_start') {
-        sendEvent({ type: 'status', message: `Using tool: ${event.name}` });
-      }
-
-      if (event.event === 'on_tool_end' && event.name === 'query-sql') {
-        const input = event.data?.input?.input ?? event.data?.input;
-        generatedSQL = typeof input === 'string' ? input : JSON.stringify(input);
-        sendEvent({ type: 'sql', content: generatedSQL });
-      }
-
-      if (event.event === 'on_chat_model_stream') {
-        const token = event.data?.chunk?.content;
-        if (token) sendEvent({ type: 'token', content: token });
-      }
+      const fallback = await buildSqlAgent(credentials, 'mistral');
+      result = await fallback.agentExecutor.invoke({ input: question });
     }
 
-    if (generatedSQL) {
-      try {
-        enforceReadOnly(generatedSQL);
-      } catch (err) {
-        sendEvent({ type: 'error', message: err.message });
-      }
-    }
+    const generatedSQL = extractSQLFromSteps(result.intermediateSteps);
 
     await Query.create({
       user: req.user.id,
@@ -62,12 +40,45 @@ exports.executeQuery = async (req, res, next) => {
       generatedSQL: generatedSQL || 'N/A',
     });
 
-    sendEvent({ type: 'done' });
-    res.end();
+    res.status(200).json({
+      success: true,
+      data: {
+        question,
+        sql: generatedSQL,
+        explanation: result.output,
+      },
+    });
   } catch (error) {
-    sendEvent({ type: 'error', message: error.message });
-    res.end();
+    if (error.message?.startsWith('Blocked:')) {
+      return res.status(403).json({ success: false, message: error.message });
+    }
+    next(error);
   } finally {
     if (dataSource) await dataSource.destroy();
+  }
+};
+
+function extractSQLFromSteps(steps) {
+  if (!steps || steps.length === 0) return null;
+  const sqlStep = [...steps].reverse().find((step) => step.action?.tool === 'query-sql');
+  if (!sqlStep) return null;
+  const input = sqlStep.action.toolInput;
+  return typeof input === 'string' ? input : input?.input || JSON.stringify(input);
+}
+
+// @desc    Get query history for a specific connection
+// @route   GET /api/query/history/:connectionId
+exports.getQueryHistory = async (req, res, next) => {
+  try {
+    const history = await Query.find({
+      user: req.user.id,
+      connection: req.params.connectionId,
+    })
+      .sort({ createdAt: -1 })
+      .limit(50);
+
+    res.status(200).json({ success: true, data: history });
+  } catch (error) {
+    next(error);
   }
 };

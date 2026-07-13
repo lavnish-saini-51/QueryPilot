@@ -1,4 +1,5 @@
 const DBConnection = require('../models/DBConnection');
+const Query = require('../models/Query');
 const { testConnection } = require('../services/mysqlService');
 
 // @desc    Test MySQL connection credentials (without saving)
@@ -70,8 +71,11 @@ exports.deleteDBConnection = async (req, res, next) => {
     if (!connection) {
       return res.status(404).json({ success: false, message: 'Connection not found' });
     }
+
+    await Query.deleteMany({ connection: connection._id, user: req.user.id });
     await connection.deleteOne();
-    res.status(200).json({ success: true, message: 'Connection deleted' });
+
+    res.status(200).json({ success: true, message: 'Connection and its query history deleted' });
   } catch (error) {
     next(error);
   }

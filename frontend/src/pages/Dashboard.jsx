@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Plus, Database, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
@@ -7,6 +7,7 @@ import { getConnections, deleteConnection } from '../services/dbConnectionServic
 
 const Dashboard = () => {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [connections, setConnections] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -67,14 +68,15 @@ const Dashboard = () => {
           {connections.map((conn) => (
             <div
               key={conn._id}
-              className="p-5 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 hover:border-indigo-400 dark:hover:border-indigo-500 transition-all"
+              onClick={() => navigate(`/query/${conn._id}`)}
+              className="p-5 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 hover:border-indigo-400 dark:hover:border-indigo-500 transition-all cursor-pointer"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                   <Database className="w-5 h-5" />
                 </div>
                 <button
-                  onClick={() => handleDelete(conn._id)}
+                  onClick={(e) => { e.stopPropagation(); handleDelete(conn._id) }}
                   className="text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                   aria-label="Delete connection"
                 >

@@ -1,7 +1,9 @@
 const express = require('express');
+const { body } = require('express-validator');
 const rateLimit = require('express-rate-limit');
-const { executeQuery } = require('../controllers/queryController');
+const { executeQuery, getQueryHistory } = require('../controllers/queryController');
 const { protect } = require('../middleware/authMiddleware');
+const validate = require('../middleware/validateMiddleware');
 
 const router = express.Router();
 
@@ -12,6 +14,17 @@ const queryLimiter = rateLimit({
 });
 
 router.use(protect);
-router.post('/', queryLimiter, executeQuery);
+
+router.post(
+  '/',
+  queryLimiter,
+  [
+    body('connectionId').notEmpty().withMessage('Connection ID is required'),
+    body('question').trim().notEmpty().withMessage('Question is required'),
+  ],
+  validate,
+  executeQuery
+);
+router.get('/history/:connectionId', getQueryHistory);
 
 module.exports = router;

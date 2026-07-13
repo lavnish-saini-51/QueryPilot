@@ -6,6 +6,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import AddConnection from './pages/AddConnection'
+import QueryChat from './pages/QueryChat'
 
 function App() {
   return (
@@ -28,6 +29,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AddConnection />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/query/:connectionId"
+          element={
+            <ProtectedRoute>
+              <QueryChat />
             </ProtectedRoute>
           }
         />
