@@ -1,16 +1,18 @@
 import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Send, ArrowLeft, Loader2, History } from 'lucide-react'
+import { Send, ArrowLeft, Loader2, History, Sun, Moon } from 'lucide-react'
 import toast from 'react-hot-toast'
 import QueryMessage from '../components/QueryMessage'
 import HistorySidebar from '../components/HistorySidebar'
 import { runQuery, getQueryHistory } from '../services/queryService'
+import { useTheme } from '../context/ThemeContext'
 
 const TYPE_SPEED_MS = 15
 
 const QueryChat = () => {
   const { connectionId } = useParams()
   const navigate = useNavigate()
+  const { theme, toggleTheme } = useTheme()
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -105,13 +107,23 @@ const QueryChat = () => {
           </button>
           <h1 className="font-semibold text-gray-900 dark:text-white">Query Assistant</h1>
         </div>
-        <button
-          onClick={openHistory}
-          className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-        >
-          <History className="w-4 h-4" /> History
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={toggleTheme}
+            className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+          <button
+            onClick={openHistory}
+            className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          >
+            <History className="w-4 h-4" /> History
+          </button>
+        </div>
       </div>
+      
 
       <HistorySidebar
         isOpen={historyOpen}

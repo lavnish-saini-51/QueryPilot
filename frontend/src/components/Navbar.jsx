@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Menu, X, Database } from 'lucide-react'
+import { Menu, X, Database, Sun, Moon } from 'lucide-react'
+import { useTheme } from '../context/ThemeContext'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const { theme, toggleTheme } = useTheme()
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
@@ -15,6 +17,13 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
+            <button
+              onClick={toggleTheme}
+              className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
             <Link to="/login" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors">
               Login
             </Link>
