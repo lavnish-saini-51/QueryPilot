@@ -6,16 +6,16 @@ QueryPilot is a natural-language-to-SQL assistant. Users ask plain English quest
 
 ✨ Features
 
-- 🔐 Authentication: JWT-based signup and login with protected routes
-- 🔌 MySQL Connection Management: securely connect any MySQL database with encrypted credential storage (AES)
-- 💬 Natural Language Query Interface: ask questions in plain English, get SQL, results, and an explanation
-- 🧠 AI SQL Agent: powered by LangChain.js tool-calling agents, inspects the real schema before generating queries so it does not invent tables or columns
-- 🔄 Automatic AI Fallback: switches from Google Gemini to Mistral AI automatically if quota limits are hit
-- 🛡️ Read-Only Safety Enforcement: destructive SQL (DROP, DELETE, TRUNCATE, ALTER, UPDATE, INSERT) is blocked at the tool level before execution, not just checked after
-- 📜 Query History: view and reuse past questions per database connection, storing only metadata and never actual result data
-- 🌗 Light and Dark Mode: true black dark theme, toggleable and persisted
-- 📱 Fully Responsive: mobile-first, tablet, and desktop layouts
-- 🧾 Markdown-Rendered Results: clean tables and syntax-highlighted SQL blocks
+- Authentication: JWT-based signup and login with protected routes
+- MySQL Connection Management: securely connect any MySQL database with encrypted credential storage (AES)
+- Natural Language Query Interface: ask questions in plain English, get SQL, results, and an explanation
+- AI SQL Agent: powered by LangChain.js tool-calling agents, inspects the real schema before generating queries so it does not invent tables or columns
+- Automatic AI Fallback: switches from Google Gemini to Mistral AI automatically if quota limits are hit
+- Read-Only Safety Enforcement: destructive SQL (DROP, DELETE, TRUNCATE, ALTER, UPDATE, INSERT) is blocked at the tool level before execution, not just checked after
+- Query History: view and reuse past questions per database connection, storing only metadata and never actual result data
+- Light and Dark Mode: true black dark theme, toggleable and persisted
+- Fully Responsive: mobile-first, tablet, and desktop layouts
+- Markdown-Rendered Results: clean tables and syntax-highlighted SQL blocks
 
 🛠️ Tech Stack
 
