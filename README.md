@@ -4,7 +4,7 @@ Talk to your database. No SQL required.
 
 QueryPilot is a natural-language-to-SQL assistant. Users ask plain English questions about their data, and an AI agent inspects the live database schema, generates the correct SQL query, executes it safely, and explains the results in plain English, all in a ChatGPT-like interface.
 
-✨ Features
+✨ Features:
 
 - Authentication: JWT-based signup and login with protected routes
 - MySQL Connection Management: securely connect any MySQL database with encrypted credential storage (AES)
