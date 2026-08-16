@@ -44,24 +44,69 @@ QueryPilot is a natural-language-to-SQL assistant. Users ask plain English quest
 
 📁 Project Structure
 
-```
 QueryPilot/
 ├── backend/
-│   ├── config/          # database connection setup
-│   ├── controllers/     # business logic
-│   ├── middleware/       # auth and validation
-│   ├── models/           # Mongoose schemas
-│   ├── routes/           # Express routes
-│   ├── services/         # MySQL and LangChain SQL agent logic
-│   ├── utils/             # encryption, JWT, SQL safety
+│   ├── config/
+│   │   └── db.js
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── dbConnectionController.js
+│   │   └── queryController.js
+│   ├── middleware/
+│   │   ├── authMiddleware.js
+│   │   └── validateMiddleware.js
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── DBConnection.js
+│   │   └── Query.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── dbConnectionRoutes.js
+│   │   └── queryRoutes.js
+│   ├── services/
+│   │   ├── mysqlService.js
+│   │   └── sqlAgentService.js
+│   ├── utils/
+│   │   ├── generateToken.js
+│   │   ├── encryption.js
+│   │   └── sqlSafety.js
+│   ├── node_modules/
+│   ├── .env
+│   ├── package.json
 │   └── server.js
+│
 └── frontend/
-    └── src/
-        ├── components/   # reusable UI components
-        ├── context/       # auth and theme context
-        ├── pages/         # route level pages
-        └── services/      # axios API calls
-```
+    ├── node_modules/
+    ├── public/
+    ├── src/
+    │   ├── components/
+    │   │   ├── Navbar.jsx
+    │   │   ├── Footer.jsx
+    │   │   ├── ProtectedRoute.jsx
+    │   │   ├── QueryMessage.jsx
+    │   │   └── HistorySidebar.jsx
+    │   ├── context/
+    │   │   ├── AuthContext.jsx
+    │   │   └── ThemeContext.jsx
+    │   ├── pages/
+    │   │   ├── LandingPage.jsx
+    │   │   ├── Login.jsx
+    │   │   ├── Register.jsx
+    │   │   ├── Dashboard.jsx
+    │   │   ├── AddConnection.jsx
+    │   │   └── QueryChat.jsx
+    │   ├── services/
+    │   │   ├── axiosInstance.js
+    │   │   ├── dbConnectionService.js
+    │   │   └── queryService.js
+    │   ├── App.jsx
+    │   ├── main.jsx
+    │   └── index.css
+    ├── .env
+    ├── index.html
+    ├── package.json
+    ├── postcss.config.js
+    └── vite.config.js
 
 ⚙️ Setup and Installation
 
