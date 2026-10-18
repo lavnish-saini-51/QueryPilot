@@ -24,7 +24,7 @@ const getLLM = (provider) => {
   }
   return new ChatGoogleGenerativeAI({
     apiKey: process.env.GEMINI_API_KEY,
-    model: 'gemini-3.5-flash',
+    model: 'gemini-3.5-flash-lite',
     temperature: 0,
   });
 };
